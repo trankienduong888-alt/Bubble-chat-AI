@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -20,15 +21,27 @@ jobs:
           java-version: '17'
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
 
+      - name: Check ZIP file
+        run: |
+          ls -lah
+          test -f BubbleChatAndroid-cloud-build.zip
+
       - name: Extract project
-        run: unzip BubbleChatAndroid-cloud-build.zip
+        run: unzip -o BubbleChatAndroid-cloud-build.zip
+
+      - name: Check project folder
+        run: |
+          ls -lah
+          test -d BubbleChatAndroid
 
       - name: Build APK
         working-directory: BubbleChatAndroid
@@ -39,3 +52,4 @@ jobs:
         with:
           name: BubbleChat-debug-apk
           path: BubbleChatAndroid/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
